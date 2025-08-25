@@ -1,4 +1,4 @@
-import Click from "../models/clicks";
+import Click from "../models/clicks.js";
 
 export const trackClick = async (req, res, next) => {
     const { influencer, source, campaign } = req.query;

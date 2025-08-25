@@ -1,8 +1,9 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import clicksRouter from './routes/clicks.routes';
-import { trackClick } from '.middleware/trackijg.js';
+import clicksRouter from './routes/clicks.routes.js';
+import userRouter from './routes/user.routes.js';
+import { trackClick } from './middleware/tracking.js';
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ app.use(trackClick);
 
 // ROUTES
 app.use('/clicks', clicksRouter);
+app.use('/users', userRouter);
 
 app.get("/", (req, res) => {
     res.send("Server är ansluten!");
