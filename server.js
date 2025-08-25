@@ -1,6 +1,10 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import session from "express-session";
+import MongoStore from "connect-mongo";
+
 import clicksRouter from './routes/clicks.routes.js';
 import userRouter from './routes/user.routes.js';
 import { trackClick } from './middleware/tracking.js';
@@ -12,6 +16,16 @@ const PORT = process.env.PORT || 3000;
 
 // MIDDLEWARE
 app.use(express.json());
+app.use(cookieParser());
+
+app.use(session({
+    secret: 'hemlig-session-key',
+    resave: false,
+    saveUninitialized: true,
+    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+    cookie: { maxAge: 1000 * 60 * 60 * 24 } // 1 dag
+}));
+
 app.use(trackClick);
 
 // ROUTES
