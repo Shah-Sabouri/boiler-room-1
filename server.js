@@ -1,6 +1,8 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import clicksRouter from './routes/clicks.routes';
+import { trackClick } from '.middleware/trackijg.js';
 
 dotenv.config();
 
@@ -9,8 +11,11 @@ const PORT = process.env.PORT || 3000;
 
 // MIDDLEWARE
 app.use(express.json());
+app.use(trackClick);
 
-// ROUTE
+// ROUTES
+app.use('/clicks', clicksRouter);
+
 app.get("/", (req, res) => {
     res.send("Server är ansluten!");
 });
@@ -22,4 +27,4 @@ mongoose
         console.log("MongoDB ansluten");
         app.listen(PORT, () => console.log(`Server körs på: http://localhost:${PORT}`));
     })
-    .catch((err) => console.error(err));
+    .catch((err) => console.error('Fel vid MongoDB-anslutning:', err));
