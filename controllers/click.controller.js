@@ -35,8 +35,15 @@ export const createClick = async (req, res) => {
             ip: req.ip,
             userAgent: req.headers['user-agent'],
         });
+
+        res.cookie("aid", click._id.toString(), {
+            httpOnly: true,
+            sameSite: "lax",
+            maxAge: 1000 * 60 * 60 * 24 * 7
+        });
+
         res.status(201).json({ message: 'Click saved', click });
     } catch (err) {
-        res.status(500)({ error: 'Misslyckades att spara click:' })
+        res.status(500).json({ error: 'Misslyckades att spara click:' })
     }
 }

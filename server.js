@@ -9,13 +9,18 @@ import clicksRouter from './routes/clicks.routes.js';
 import userRouter from './routes/user.routes.js';
 import { trackClick } from './middleware/tracking.js';
 
+import path from "path";
+import { fileURLToPath } from "url";
+
 dotenv.config();
 
 const app = express();
+
 const PORT = process.env.PORT || 3000;
 
 // MIDDLEWARE
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use(session({
@@ -26,7 +31,11 @@ app.use(session({
     cookie: { maxAge: 1000 * 60 * 60 * 24 } // 1 dag
 }));
 
-app.use(trackClick);
+// app.use(trackClick);
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use(express.static(path.join(__dirname, "public")));
 
 // ROUTES
 app.use('/clicks', clicksRouter);

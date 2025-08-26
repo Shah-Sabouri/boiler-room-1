@@ -1,7 +1,7 @@
 import { saveClick } from '../controllers/click.controller.js';
 
 export const trackClick = async (req, res, next) => {
-    const { influencer, source, campaign } = req.query;
+    const { influencer, source, campaign } = req.body;
     if (influencer || source || campaign) {
         try {
         const click = await saveClick({
