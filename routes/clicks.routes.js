@@ -1,9 +1,7 @@
-import express from 'express';
-import { createClick } from '../controllers/click.controller.js';
-import { trackClick } from '../middleware/tracking.js';
+import express from "express";
+import { createClick } from "../controllers/click.controller.js";
 
 const router = express.Router();
-
-router.post('/', trackClick, createClick);
+router.post("/", createClick);
 
 export default router;

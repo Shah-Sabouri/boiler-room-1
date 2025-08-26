@@ -10,7 +10,6 @@
 
 <body>
   <h1>Register</h1>
-  <script src="scripts.js"></script>
   
   <form method="POST" action="/users/signup">
     <label for="name">Name:</label>
@@ -18,7 +17,6 @@
 
     <label for="email">Email:</label>
     <input type="email" id="email" name="email" required>
-
 
     <input type="hidden" id="visitorId" name="visitorId">
     <input type="hidden" id="influencer" name="influencer">
@@ -28,45 +26,63 @@
     <input type="submit" value="SEND">
   </form>
 
-<script>
-  // läs queryparameter
-  const qs = new URLSearchParams(window.location.search);
-  const influencer = qs.get('influencer');
-  const source = qs.get("source");
-  const campaign = qs.get("campaign");
+  <script>
+    // LÄS QUERYPARAMS
+    const qs = new URLSearchParams(window.location.search);
+    const influencer = qs.get('influencer');
+    const source = qs.get("source");
+    const campaign = qs.get("campaign");
 
-  // fyll gömda fält i formuläret
-  if (influencer) document.getElementById("influencer").value = influencer;
-  if (source) document.getElementById("source").value = source;
-  if (campaign) document.getElementById("campaign").value = campaign;
+    if (influencer) document.getElementById("influencer").value = influencer;
+    if (source) document.getElementById("source").value = source;
+    if (campaign) document.getElementById("campaign").value = campaign;
 
-  // skapa en enkel visitorID i cookie
-  function getCookie(name) {
-    return document.cookie.split(";").find(r => r.startsWith(name+"="))?.split("=")[1];
-  }
+    // COOKIE-HJÄLPRUTINER
+    function getCookie(name) {
+      return document.cookie.split(";").find(r => r.startsWith(name + "="))?.split("=")[1];
+    }
 
-  function setCookie(name, value, days) {
-    const d = new Date();
-    d.setTime(d.getTime() + days*24*60*60*1000);
-    document.cookie = name + "=" + value + ";expires=" + d.toUTCString() + ";path=/";
-  }
-  
-  const visitorIdInput = document.getElementById("visitorId");
-  let vid = getCookie("visitorId");
-  if (!vid) {
-    vid = Math.random().toString(36).substring(2,12);
-    setCookie("visitorId", vid, 365);
-  }
+    function setCookie(name, value, days) {
+      const d = new Date();
+      d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+      document.cookie = name + "=" + value + ";expires=" + d.toUTCString() + ";path=/";
+    }
 
-  // sicka spårnings data till backend
-  if (influencer || source || campaign) {
-    fetch("/clicks", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ influencer, source, campaign, visitorId: visitorIdInput.value })
-    }).catch(()=>{});
-  }
-</script>
+    const visitorIdInput = document.getElementById("visitorId");
+    let vid = getCookie("visitorId");
+    if (!vid) {
+      vid = Math.random().toString(36).substring(2, 12);
+      setCookie("visitorId", vid, 365);
+    }
+    visitorIdInput.value = vid;
+
+    // TRACKING OCH FORM-SUBMIT
+    document.querySelector("form").addEventListener("submit", async (e) => {
+      e.preventDefault(); // stoppa default submit
+
+      // skicka click till backend
+      try {
+        const clickRes = await fetch("/clicks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            influencer: document.getElementById("influencer").value,
+            source: document.getElementById("source").value,
+            campaign: document.getElementById("campaign").value,
+            visitorId: visitorIdInput.value
+          })
+        });
+
+        const clickData = await clickRes.json();
+        console.log("Click saved:", clickData);
+      } catch (err) {
+        console.error("Failed to save click:", err);
+      }
+
+      // fortsätt med normalt form-submit
+      e.target.submit();
+    });
+  </script>
 </body>
 
 </html>

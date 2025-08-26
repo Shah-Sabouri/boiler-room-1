@@ -22,6 +22,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(trackClick);
 
 app.use(session({
     secret: 'hemlig-session-key',
